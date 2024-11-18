@@ -1,0 +1,52 @@
+[package]
+name = "dump_syms"
+version = "2.3.4"
+authors = ["Calixte Denizet <cdenizet@mozilla.com>"]
+repository = "https://github.com/mozilla/dump_syms"
+homepage = "https://github.com/mozilla/dump_syms"
+description = "Dump debug symbols into Breakpad ones"
+edition = "2018"
+license = "MIT/Apache-2.0"
+
+[[bin]]
+name = "dump_syms"
+required-features = ["cli"]
+
+[features]
+default = ["cli", "http"]
+# Feature needed when building the dump_syms executable
+cli = ["clap", "simplelog"]
+# Feature for allowing retrieval of symbols via HTTP
+http = ["reqwest", "futures", "tokio"]
+
+[dependencies]
+
+[dev-dependencies]
+reqwest = { version = "0.12", default-features = false, features = [
+    "blocking",
+    "rustls-tls",
+] }
+fxhash = "0.2"
+tempfile = "3"
+
+# The profile that 'cargo dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
+
+# Config for 'cargo dist'
+[workspace.metadata.dist]
+# The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
+cargo-dist-version = "0.22.1"
+# CI backends to support
+ci = "github"
+# The installers to generate for each app
+installers = ["shell"]
+# Target platforms to build apps for (Rust target-triple syntax)
+targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
+# Which actions to run on pull requests
+pr-run-mode = "upload"
+# Whether to install an updater program
+install-updater = false
+# Path that installers should place binaries in
+install-path = "CARGO_HOME"
